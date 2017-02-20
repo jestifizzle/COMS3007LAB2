@@ -62,12 +62,15 @@ public class Lab2Q1 {
     }
 
     public static double[] PerceptLearn(List<double[]> X, int[] T, double[] W, double n){
+        int err = 0;
         for (int j = 0; j < X.size(); j++){
             double[] row = X.get(j);
             int Y = percept(W, row);
+            err = err + Math.abs(T[j]-Y);
             for (int k = 0; k < row.length; k++){
-                W[k] = W[k] + (n*(T[j] - Y)*row[k]);
+                W[k] = (double)Math.round( (W[k] + (n*(T[j] - Y)*row[k]))*10000d )/10000d;
             }
+            System.out.println("Error: " + err);
         }
         return W;
     }
