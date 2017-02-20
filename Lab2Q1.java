@@ -1,7 +1,6 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import com.sun.org.apache.xpath.internal.operations.Or;
+
+import java.util.*;
 
 /**
  * Created by jesse on 2017/02/20.
@@ -62,15 +61,21 @@ public class Lab2Q1 {
     }
 
     public static double[] PerceptLearn(List<double[]> X, int[] T, double[] W, double n){
+        List<Integer> Order = new ArrayList<>();
+        for (int o = 0; o < X.size(); o++){
+            Order.add(o);
+        }
+        Collections.shuffle(Order);
         int err = 0;
         for (int j = 0; j < X.size(); j++){
-            double[] row = X.get(j);
+            int O = Order.get(j);
+            double[] row = X.get(O);
             int Y = percept(W, row);
-            err = err + Math.abs(T[j]-Y);
+            err = err + Math.abs(T[O]-Y);
             for (int k = 0; k < row.length; k++){
-                W[k] = (double)Math.round( (W[k] + (n*(T[j] - Y)*row[k]))*10000d )/10000d;
+                W[k] = (double)Math.round( (W[k] + (n*(T[O] - Y)*row[k]))*10000d )/10000d;
             }
-            System.out.println("Error: " + err);
+            System.out.println("Error: " + err + " Index: " + O);
         }
         return W;
     }
