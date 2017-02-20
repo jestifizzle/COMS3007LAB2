@@ -35,6 +35,11 @@ public class Lab2Q1 {
             arr.add(inputX);
             rowlength = inputX.length;
         }
+        //System.out.println("Enter # of additional layers: ");
+        //int Layers = in.nextInt();
+        System.out.println("Enter # of 2nd layer nodes: ");
+        int Nodes = in.nextInt();
+        //int[] Layer2 = new int[Nodes+1];
         int[] Target = new int[arr.size()];
         for (int j = 0; j < arr.size(); j++){
             double[] t = arr.get(j);
@@ -44,39 +49,56 @@ public class Lab2Q1 {
         }
         double min = -1;
         double max = 1;
-        double[] weight = new double[rowlength];
+        List<double[]> weight = new ArrayList<double[]>();
+        //double[] weight = new double[rowlength];
         Random r = new Random();
-        for (int k = 0; k < weight.length; k++){
-            double result = min + (r.nextDouble()*(max - min));
-            weight[k] = (double)Math.round(result*10000d)/10000d;
+        for (int l = 0; l < Nodes; l++){
+            double[] Wrow = new double[rowlength];
+            for (int k = 0; k < rowlength; k++){
+                double result = min + (r.nextDouble()*(max - min));
+                Wrow[k] = (double)Math.round(result*10000d)/10000d;
+            }
+            weight.add(Wrow);
         }
         double rate = 0.25;
 
-        double[] learntWeight = PerceptLearn(arr, Target, weight, rate);
+        List<int[]> learntWeight = PerceptLearn(arr, Target, weight, rate);
 
-        for (int m = 0; m < learntWeight.length; m++){
-            System.out.println(learntWeight[m]);
+        for (int m = 0; m < learntWeight.size(); m++){
+            System.out.println("Next layer (Y): ");
+            int[] R = learntWeight.get(m);
+            for (int n = 0; n < R.length; n++){
+                System.out.println(R[n]);
+            }
         }
         in.close();
     }
 
-    public static double[] PerceptLearn(List<double[]> X, int[] T, double[] W, double n){
+    public static List<int[]> PerceptLearn(List<double[]> X, int[] T, List<double[]> W, double n){
+        List<int[]> Yresult = new ArrayList<>();
         List<Integer> Order = new ArrayList<>();
         for (int o = 0; o < X.size(); o++){
             Order.add(o);
         }
         Collections.shuffle(Order);
-        int err = 0;
+        //int err = 0;
         for (int j = 0; j < X.size(); j++){
-            int O = Order.get(j);
-            double[] row = X.get(O);
-            int Y = percept(W, row);
-            err = err + Math.abs(T[O]-Y);
-            for (int k = 0; k < row.length; k++){
-                W[k] = (double)Math.round( (W[k] + (n*(T[O] - Y)*row[k]))*10000d )/10000d;
+            int[] Y = new int[W.size()+1];
+            for (int x = 0; x < W.size(); x++){
+                int O = Order.get(j);
+                double[] row = X.get(O);
+                double[] w = W.get(x);
+                Y[x] = percept(w, row);
+                //err = err + Math.abs(T[O]-Y);
+                for (int k = 0; k < row.length; k++){
+                    w[k] = (double)Math.round( (w[k] + (n*(T[O] - Y[x])*row[k]))*10000d )/10000d;
+                }
+                W.set(x,w);
             }
-            System.out.println("Error: " + err + " Index: " + O);
+            Y[W.size()] = -1;
+            Yresult.add(Y);
+            //System.out.println("Error: " + err + " Index: " + O);
         }
-        return W;
+        return Yresult;
     }
 }
